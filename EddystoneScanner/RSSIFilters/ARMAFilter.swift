@@ -25,11 +25,11 @@ internal class ArmaFilter: RSSIFilter {
     internal let filterType: RSSIFilterType = .arma
     
     /// Filtered RSSI value
-    internal var filteredRSSI: Int?
+    internal var filteredRSSI: Double?
     
-    private let sArmaCoefficient: Float
+    private let sArmaCoefficient: Double
     
-    private let ARMA_FILTER_PROCESS_NOISE: Float = 0.15
+    private let ARMA_FILTER_PROCESS_NOISE: Double = 0.15
     
     internal init() {
         sArmaCoefficient = ARMA_FILTER_PROCESS_NOISE
@@ -41,10 +41,9 @@ internal class ArmaFilter: RSSIFilter {
         }
         
         if let x = filteredRSSI {
-            filteredRSSI = Int(Float(x) - sArmaCoefficient * Float(x - rssi))
+            filteredRSSI = x - sArmaCoefficient * (x - Double(rssi))
             return
         }
-        filteredRSSI = rssi
+        filteredRSSI = Double(rssi)
     }
 }
-

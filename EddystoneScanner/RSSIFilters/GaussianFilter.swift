@@ -30,61 +30,60 @@ internal class GaussianFilter: RSSIFilter {
     var filterType: RSSIFilterType
     
     /// Filtered RSSI value
-    var filteredRSSI: Int? {
-        get {
-            guard recordedRSSI.count > RECORDED_RSSI_COUNT else {
-                return nil
-            }
-            
-            let sigma = 3.0
-            var median: Double
-            let sorted = recordedRSSI.sorted(by: { $0 < $1 })
-            
-            var filtered: [Int] = []
-            
-            for i in 3..<7 {
-                filtered.append(sorted[i])
-            }
-            
-            let len = filtered.count
-            
-            if len == 1 {
-                median = Double(filtered[0])
-            } else if len % 2 == 0 {
-                median = (Double(filtered[len / 2]) + Double(filtered[len / 2 - 1])) / 2
-            } else {
-                median = Double(filtered[len / 2])
-            }
-            
-            var mean = 0, meanCount = 0
-            
-            for i in 0..<len {
-                let value = filtered[i]
-                if (value < 0) && (abs(Double(value) - median) < sigma) {
-                    mean += value
-                    meanCount += 1
-                }
-            }
-            
-            if meanCount > 0 {
-                mean /= meanCount
-            } else {
-                mean = previousRSSI ?? 0
-            }
-            previousRSSI = mean + bias
-            return previousRSSI
+    var filteredRSSI: Double? {
+        guard recordedRSSI.count > RECORDED_RSSI_COUNT else {
+            return nil
         }
+        
+        let sigma = 3.0
+        var median: Double
+        let sorted = recordedRSSI.sorted(by: { $0 < $1 })
+        
+        var filtered: [Double] = []
+        
+        for i in 3..<7 {
+            filtered.append(Double(sorted[i]))
+        }
+        
+        let len = filtered.count
+        
+        if len == 1 {
+            median = Double(filtered[0])
+        } else if len % 2 == 0 {
+            median = (Double(filtered[len / 2]) + Double(filtered[len / 2 - 1])) / 2
+        } else {
+            median = Double(filtered[len / 2])
+        }
+        
+        var mean: Double = 0
+        var meanCount = 0
+        
+        for i in 0..<len {
+            let value = filtered[i]
+            if (value < 0) && (abs(Double(value) - median) < sigma) {
+                mean += value
+                meanCount += 1
+            }
+        }
+        
+        if meanCount > 0 {
+            mean /= Double(meanCount)
+        } else {
+            mean = previousRSSI ?? 0
+        }
+        previousRSSI = mean + bias
+        return Double(previousRSSI!)
     }
     
-    private var bias: Int
+    private var bias: Double
     
     private var recordedRSSI: [Int] = []
     
-    private var previousRSSI: Int?
+    private var previousRSSI: Double?
     
     internal init() {
         filterType = .gaussian
-        bias = BeaconAffinity.medium.rawValue
+        bias = Double(BeaconAffinity.medium.rawValue)
     }
     
     internal func calculate(forRSSI rssi: Int) {

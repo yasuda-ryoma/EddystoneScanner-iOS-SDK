@@ -19,7 +19,7 @@ internal class KalmanFilter: RSSIFilter {
     internal let filterType: RSSIFilterType = .kalman
     
     /// Filtered RSSI value
-    internal var filteredRSSI: Int?
+    internal var filteredRSSI: Double?
     
     /// Process noise
     private let R: Float
@@ -63,7 +63,7 @@ internal class KalmanFilter: RSSIFilter {
      */
     internal func calculate(forRSSI rssi: Int) {
         guard let x = filteredRSSI else {
-            self.filteredRSSI = Int((1 / self.C) * Float(rssi))
+            self.filteredRSSI = Double((1 / self.C) * Float(rssi))
             self.cov = (1 / self.C) * self.Q * (1 / self.C)
             return
         }

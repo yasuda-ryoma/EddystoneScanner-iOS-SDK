@@ -28,11 +28,11 @@ internal class RunningAverageFilter: RSSIFilter {
             return rssi.hashValue ^ timeStamp.hashValue
         }
         
-        static func <(lhs: Measurement, rhs: Measurement) -> Bool {
+        static func < (lhs: Measurement, rhs: Measurement) -> Bool {
             return lhs.rssi < rhs.rssi
         }
         
-        static func ==(lhs: Measurement, rhs: Measurement) -> Bool {
+        static func == (lhs: Measurement, rhs: Measurement) -> Bool {
             return lhs.rssi == rhs.rssi
         }
         
@@ -44,27 +44,25 @@ internal class RunningAverageFilter: RSSIFilter {
     internal var filterType: RSSIFilterType
     
     /// Filtered RSSI value
-    internal var filteredRSSI: Int? {
-        get {
-            guard measurements.count > 0 else {
-                return nil
-            }
-            let size = measurements.count
-            var startIndex = measurements.startIndex
-            var endIndex = measurements.endIndex
-            if (size > 2) {
-                startIndex = measurements.startIndex + measurements.index(measurements.startIndex, offsetBy: size / 10 + 1)
-                endIndex = measurements.startIndex + measurements.index(measurements.startIndex, offsetBy: size - size / 10 - 2)
-            }
-            
-            var sum = 0.0
-            for i in startIndex..<endIndex {
-                sum += Double(measurements[i].rssi)
-            }
-            let runningAverage = sum / Double(endIndex - startIndex + 1)
-            
-            return Int(runningAverage)
+    internal var filteredRSSI: Double? {
+        guard !measurements.isEmpty else {
+            return nil
         }
+        let size = measurements.count
+        var startIndex = measurements.startIndex
+        var endIndex = measurements.endIndex
+        if size > 2 {
+            startIndex = measurements.startIndex + measurements.index(measurements.startIndex, offsetBy: size / 10 + 1)
+            endIndex = measurements.startIndex + measurements.index(measurements.startIndex, offsetBy: size - size / 10 - 2)
+        }
+        
+        var sum = 0.0
+        for i in startIndex..<endIndex {
+            sum += Double(measurements[i].rssi)
+        }
+        let runningAverage = sum / Double(endIndex - startIndex + 1)
+        
+        return runningAverage
     }
     
     internal var measurements: [Measurement] = []

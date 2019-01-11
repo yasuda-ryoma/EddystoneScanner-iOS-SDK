@@ -35,7 +35,7 @@ import CoreBluetooth
     @objc public var eddystoneURL: URL?
     
     /// Filtered RSSI value based on the filter type specified
-    @objc public var filteredRSSI: Int {
+    @objc public var filteredRSSI: Double {
         get {
             return self.filter.filteredRSSI ?? 0
         }

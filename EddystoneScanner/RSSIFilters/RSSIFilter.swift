@@ -26,11 +26,8 @@ import Foundation
 /// RSSI signal filter protocol that all filters need to conform to
 ///
 public protocol RSSIFilter {
-    /// Defines the filter type
-    var filterType: RSSIFilterType { get }
-    
     /// Filtered RSSI value
-    var filteredRSSI: Int? { get }
+    var filteredRSSI: Double? { get }
     
     /// Function to filter RSSI on current signal
     func calculate(forRSSI rssi: Int)
