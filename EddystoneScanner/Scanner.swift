@@ -46,6 +46,8 @@ import CoreBluetooth
     /// RSSI Filter type used
     @objc public let rssiFilterType: RSSIFilterType
     
+    public var rssiFilterFactory: RSSIFilterFactory?
+
     private var centralManager: CBCentralManager!
     private let beaconOperationsQueue: DispatchQueue = DispatchQueue(label: Constants.BEACON_OPERATION_QUEUE_LABEL)
     private var shouldBeScanning: Bool = false
@@ -55,9 +57,13 @@ import CoreBluetooth
     
     // MARK: Public functions
     /// Initialises the CBCentralManager for scanning and the DispatchTimer
-    public init(rssiFilterType: RSSIFilterType = .arma) {
+    public init(rssiFilterType: RSSIFilterType = .arma,
+                rssiFilterFactory: RSSIFilterFactory? = nil,
+                namespaceFilter: String? = nil) {
         self.rssiFilterType = rssiFilterType
-        
+        self.namespaceFilter = namespaceFilter
+        self.rssiFilterFactory = rssiFilterFactory
+
         super.init()
         
         self.centralManager = CBCentralManager(delegate: self, queue: self.beaconOperationsQueue)
@@ -183,10 +189,19 @@ extension Scanner: CBCentralManagerDelegate {
         guard let index = nearbyBeacons.index(where: {$0.identifier == peripheral.identifier}) else {
             // Newly discovered beacon. Create a new beacon object
             let beaconServiceData = serviceData[Eddystone.ServiceUUID] as? Data
-            guard let beacon = Beacon(identifier: peripheral.identifier, frameData: beaconServiceData, rssi: RSSI.intValue, name: peripheral.name, namespaceFilter: namespaceFilter, filterType: rssiFilterType) else {
+            
+            let filter = rssiFilterFactory?.filter()
+            
+            guard let beacon = Beacon(identifier: peripheral.identifier,
+                                      frameData: beaconServiceData,
+                                      rssi: RSSI.intValue,
+                                      name: peripheral.name,
+                                      namespaceFilter: namespaceFilter,
+                                      filterType: rssiFilterType,
+                                      customFilter: filter) else {
                 return
             }
-            
+
             self.nearbyBeacons.insert(beacon)
             self.delegate?.didFindBeacon(scanner: self, beacon: beacon)
             return

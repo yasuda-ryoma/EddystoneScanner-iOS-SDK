@@ -72,25 +72,33 @@ import CoreBluetooth
                  txPower: Int,
                  rssi: Int,
                  name: String?,
-                 filterType: RSSIFilterType) {
+                 filterType: RSSIFilterType,
+                 customFilter: RSSIFilter?) {
         self.name = name
         self.identifier = identifier
         self.beaconID = beaconID
         self.txPower = txPower
         self.rssi = rssi
         
-        if filterType == .arma {
+        switch filterType {
+        case .arma:
             self.filter = ArmaFilter()
-        } else if filterType == .kalman {
+        case .kalman:
             self.filter = KalmanFilter()
-        } else if filterType == .gaussian {
+        case .gaussian:
             self.filter = GaussianFilter()
-        } else {
+        case .runningAverage:
             self.filter = RunningAverageFilter()
+        case .custom:
+            guard let cf = customFilter else {
+                fatalError("A custom filter should be assigned if you specified .custom as filterType")
+            }
+            self.filter = cf
         }
         
         super.init()
     }
+
     
     /**
      Failable convinience initialiser to create a Beacon object with Eddystone UID/EID packet
@@ -104,7 +112,8 @@ import CoreBluetooth
                                rssi: Int,
                                name: String?,
                                namespaceFilter: String?,
-                               filterType: RSSIFilterType) {
+                               filterType: RSSIFilterType,
+                               customFilter: RSSIFilter? = nil) {
         guard let frameData = frameData, frameData.count > 1 else {
             return nil
         }
@@ -151,7 +160,8 @@ import CoreBluetooth
                   txPower: txPower,
                   rssi: rssi,
                   name: name,
-                  filterType: filterType)
+                  filterType: filterType,
+                  customFilter: customFilter)
     }
     
     /**

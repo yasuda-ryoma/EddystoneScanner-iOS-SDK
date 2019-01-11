@@ -17,6 +17,7 @@ import Foundation
     case arma
     case gaussian
     case runningAverage
+    case custom
 }
 
 ///
@@ -24,7 +25,7 @@ import Foundation
 ///
 /// RSSI signal filter protocol that all filters need to conform to
 ///
-internal protocol RSSIFilter {
+public protocol RSSIFilter {
     /// Defines the filter type
     var filterType: RSSIFilterType { get }
     
@@ -33,4 +34,11 @@ internal protocol RSSIFilter {
     
     /// Function to filter RSSI on current signal
     func calculate(forRSSI rssi: Int)
+}
+
+///
+/// RSSIFilterFactory
+///
+public protocol RSSIFilterFactory {
+    func filter() -> RSSIFilter
 }
