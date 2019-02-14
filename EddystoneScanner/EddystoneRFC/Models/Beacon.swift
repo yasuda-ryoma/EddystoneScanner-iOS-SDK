@@ -37,7 +37,7 @@ import CoreBluetooth
     /// Filtered RSSI value based on the filter type specified
     @objc public var filteredRSSI: Double {
         get {
-            return self.filter.filteredRSSI ?? 0
+            return self.filter.filteredRSSI ?? Double(Constants.LOWEST_RSSI_VALUE)
         }
     }
     
