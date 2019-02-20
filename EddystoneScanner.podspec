@@ -11,7 +11,7 @@ Framework to scan for eddystone compliant beacons build on Swift for iOS.
   s.homepage         = 'https://github.com/Beaconstac/EddystoneScanner-iOS-SDK'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'firecast' => 'amit.dp180@gmail.com' }
-  s.source           = { :git => 'https://github.com/Beaconstac/EddystoneScanner-iOS-SDK.git', :tag => "v#{s.version}" }
+  s.source           = { :git => 'https://github.com/team-lab/EddystoneScanner-iOS-SDK.git', :tag => "v#{s.version}" }
 
   s.frameworks       = 'Foundation', 'CoreBluetooth'
   s.requires_arc     = true
